@@ -33,3 +33,6 @@ The main advantage is that this only needs to be compiled once, rather than for 
 
 ## Demonstration
 The prnn-demo.ipynb notebook shows an example of how to train a PRNN.
+
+## Fun-fact
+JAX-PRNN is also known as PRRRNN, because it makes your computer go brrr.
