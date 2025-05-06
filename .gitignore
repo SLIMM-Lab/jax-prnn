@@ -1,0 +1,9 @@
+# Default ignored files
+*.pdf
+*.h5
+*.zip
+*.txt
+*.data
+.idea*
+*.npy
+__pycache__
