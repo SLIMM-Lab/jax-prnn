@@ -5,8 +5,8 @@ If you are unfamiliar with PRNNs, start with the [main repository](https://githu
 This repository follows a very similar structure, and the demonstration uses the same datasets.
 
 ## What is different compared to the torch-based implementation?
-### JIT
-The main difference in speed is achieved by using [just-in-time compilation (JIT)](https://docs.jax.dev/en/latest/jit-compilation.html). 
+### Just-In-Time compilation
+The main difference in speed is achieved by using [Just-In-Time compilation (JIT)](https://docs.jax.dev/en/latest/jit-compilation.html). 
 To enable this, the material model has been heavily modified. Instead of being a class, it consists of pure functions.
 This is more difficult to implement, can be challenging to debug, but it results in significantly faster computation times.
 
