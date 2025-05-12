@@ -12,9 +12,9 @@ class SoftLayer(nn.Module):
 
     @nn.compact
     def __call__(self, x):
-        # x shape: [s, b, m * o] = [s, b, p]
-        # s = sequence length
+        # x shape: [b, s, m * o] = [b, s, p]
         # b = batch size
+        # s = sequence length
         # p = layer input: m * o
 
         # Create unconstrained weights parameter
@@ -27,7 +27,7 @@ class SoftLayer(nn.Module):
 
         # linear transform, essentially dot product between weights and input
         # Compute using Einstein summation convention
-        output = jnp.einsum('sbp,po->sbo', x, weights)  # [s, b, o]
+        output = jnp.einsum('bsp,po->bso', x, weights)  # [b, s, o]
 
         if self.use_bias:
             bias = self.param('bias',
@@ -49,9 +49,9 @@ class SparseNormLayer(nn.Module):
 
     @nn.compact
     def __call__(self, x):
-        # x shape: [s, b, m * o]
-        s = x.shape[0]  # sequence length
-        b = x.shape[1]  # batch size
+        # x shape: [b, s, m * o]
+        b = x.shape[0]  # batch size
+        s = x.shape[1]  # sequence length
 
         # Create weights parameter
         raw_weights = self.param('raw_weights',
@@ -67,13 +67,13 @@ class SparseNormLayer(nn.Module):
         # weights = jax.nn.softmax(raw_weights, axis=0)   # [m, o]
 
         # Reshape input for sparse multiplication
-        x_reshaped = x.reshape(s, b, self.n_matpts, self.n_outputs)  # [s, b, m, o]
+        x_reshaped = x.reshape(b, s, self.n_matpts, self.n_outputs)  # [b, s, m, o]
 
         # Compute layer using Einstein summation convention
-        # sbmo: input dimensions
+        # bsmo: input dimensions
         # mo: weight dimensions (broadcasts to match input)
         # -> sbo: output dimensions (sum over 'm')
-        output = jnp.einsum('sbmo,mo->sbo', x_reshaped, weights)
+        output = jnp.einsum('bsmo,mo->bso', x_reshaped, weights)
 
         return output
 
@@ -89,9 +89,9 @@ class SparseSharedNormLayer(nn.Module):
 
     @nn.compact
     def __call__(self, x):
-        # x shape: [s, b, m * o]
-        s = x.shape[0]  # sequence length
-        b = x.shape[1]  # batch size
+        # x shape: [b, s, m * o]
+        b = x.shape[0]  # batch size
+        s = x.shape[1]  # sequence length
 
         # Create unconstrained weights parameter
         raw_weights = self.param('raw_weights',
@@ -107,13 +107,13 @@ class SparseSharedNormLayer(nn.Module):
         # weights = nn.softmax(raw_weights)  # [m]
 
         # Reshape input for sparse multiplication
-        x_reshaped = x.reshape(s, b, self.n_matpts, self.n_outputs)  # [s, b, m, o]
+        x_reshaped = x.reshape(b, s, self.n_matpts, self.n_outputs)  # [b, s, m, o]
 
         # Compute layer using Einstein summation convention
         # sbmo: input dimensions
         # m: weight dimensions (broadcasts to match input)
-        # -> sbo: output dimensions (sum over 'p')
-        output = jnp.einsum('sbmo,m->sbo', x_reshaped, weights)  # [s, b, o]
+        # -> bso: output dimensions (sum over 'p')
+        output = jnp.einsum('bsmo,m->bso', x_reshaped, weights)  # [b, s, o]
 
         return output
 
