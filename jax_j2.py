@@ -6,7 +6,7 @@ from typing import NamedTuple
 # Enable float64 precision if necessary
 # jax.config.update("jax_enable_x64", True)
 
-STATIC_MAX_ITER_YIELD = 25
+STATIC_MAX_ITER_YIELD = 5  # Fixed number of iterations for the return mapping scheme. Significantly influences performance. For jit compilation, this should be a constant.
 
 class Material(NamedTuple):
     E: float
